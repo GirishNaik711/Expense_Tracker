@@ -1,0 +1,41 @@
+services:
+  # Backend Service (Python FastAPI)
+  - type: web
+    name: expenseai-backend
+    env: python
+    plan: free
+    buildCommand: |
+      cd backend
+      pip install -r requirements.txt
+    startCommand: |
+      cd backend
+      python run.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+      - key: PORT
+        value: 8000
+      - key: HOST
+        value: 0.0.0.0
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: GOOGLE_API_KEY
+        sync: false
+    healthCheckPath: /health
+    autoDeploy: true
+
+  # Frontend Service (Next.js)
+  - type: web
+    name: expenseai-frontend
+    env: node
+    plan: free
+    buildCommand: |
+      npm install
+      npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: NEXT_PUBLIC_API_URL
+        value: https://expenseai-backend.onrender.com
+    autoDeploy: true
